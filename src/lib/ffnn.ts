@@ -53,4 +53,8 @@ export default class FeedForwardNetwork {
         }
     }
 
+    forward(inputs: number[]) {
+        return this.layers.reduce((input, layer) => layer.forward(input), inputs);
+    }
+
 }

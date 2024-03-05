@@ -1,30 +1,18 @@
-import { Line, LineSegment, Point, Text, VictoryAxis, VictoryChart, VictoryLabel, VictoryLine, VictoryPrimitiveShapeProps, VictoryScatter } from "victory";
+import { LineSegment, Point, TSpan, VictoryAxis, VictoryChart, VictoryLabel, VictoryLine, VictoryScatter } from "victory";
 import type { EvalFunction } from "mathjs";
-import { Children, PropsWithChildren, useCallback, useId, useMemo, useState } from "react";
+import { useCallback, useId, useMemo, useState } from "react";
 import Formula from "./Formula";
 import { CheckToggle } from "./Toggle";
+import { useNeuralNet } from "../context/NetworkContext";
 
 function* sampler<T>(start = 0, end = 5, step = 1, sample: (point: number) => T) {
     for (let i = start; i <= end; i += step)
         yield sample(i);
 }
 
-function ThemeLine(props: VictoryPrimitiveShapeProps) {
-    delete props.style.stroke;
-    return <Line {...props} className="stroke-base-content" />
-}
-
-function ThemeText(props: PropsWithChildren) {
-    Children.forEach(props.children, (child: any) => delete child.props.style.fill);
-    return <Text {...props} className="fill-base-content" />;
-};
-
-function ThemePoint(props: VictoryPrimitiveShapeProps) {
-    delete props.style.fill;
-    return <Point {...props} className="fill-base-content"/>;
-}
-
 export default function Graph() {
+    const { network } = useNeuralNet();
+
     const start = -2, end = 10, padding = 2;
     const [evalFn, setEvalFn] = useState<EvalFunction>(() => ({ evaluate: ({ x }) => x }));
     const sampleDataPoint = useCallback((x: number) => ({ x, y: evalFn.evaluate({ x }) }), [evalFn]);
@@ -54,18 +42,23 @@ export default function Graph() {
             <div>
                 <VictoryChart domain={[start, end]} padding={20}>
                     <VictoryAxis
-                        axisComponent={<LineSegment lineComponent={<ThemeLine />} />}
-                        tickLabelComponent={<VictoryLabel textComponent={<ThemeText />} />}
+                        axisComponent={<LineSegment className="!stroke-base-content" />}
+                        tickLabelComponent={<VictoryLabel tspanComponent={<TSpan className="!fill-base-content"/>} />}
                     />
                     <VictoryAxis
                         dependentAxis
-                        axisComponent={<LineSegment lineComponent={<ThemeLine />} />}
-                        tickLabelComponent={<VictoryLabel textComponent={<ThemeText />} />}
+                        axisComponent={<LineSegment className="!stroke-base-content" />}
+                        tickLabelComponent={<VictoryLabel tspanComponent={<TSpan className="!fill-base-content"/>} />}
+                    />
+                    <VictoryLine
+                        samples={120}
+                        y={({ x }) => network.forward([ x ])[0]}
+                        style={{ data: { stroke: "red" } }}
                     />
                     {dataVisual && (
                         <VictoryScatter
                             data={dataSample}
-                            dataComponent={<ThemePoint/>}
+                            dataComponent={<Point className="!fill-base-content"/>}
                         />
                     )}
                     {lineVisual && (
