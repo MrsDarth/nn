@@ -1,4 +1,4 @@
-import { parse, EvalFunction, ConstantNode, SymbolNode } from "mathjs";
+import { compile, EvalFunction } from "mathjs";
 import { useState } from "react";
 
 interface FormulaProps {
@@ -16,14 +16,9 @@ export default function Formula({ setEval }: FormulaProps) {
                 const expression = e.target.value;
                 setFormula(expression);
                 try {
-                    const mathNode = parse(expression);
-                    mathNode.traverse(node => {
-                        if (node instanceof ConstantNode && node.value === undefined)
-                            node.value = 0;
-                        if (node instanceof SymbolNode && node.name !== "x")
-                            throw new Error("Invalid symbol: " + node.name);
-                    });
-                    setEval(mathNode.compile());
+                    const evalFn = compile(expression);
+                    evalFn.evaluate({ x: 0 });
+                    setEval(evalFn);
                 } catch { }
             }}
         />
