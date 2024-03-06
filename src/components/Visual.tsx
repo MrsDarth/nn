@@ -1,4 +1,3 @@
-import { VictoryChart } from "victory";
 import Controls from "./Controls";
 
 export default function Visual() {

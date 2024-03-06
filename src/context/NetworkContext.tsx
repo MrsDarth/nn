@@ -1,7 +1,7 @@
 import { PropsWithChildren, createContext, useCallback, useContext, useMemo, useState } from "react";
 import FeedForwardNetwork, { LayerInit } from "../lib/ffnn";
 import useRender from "../hooks/render";
-import { prelu, relu, sigmoid, tanh } from "../lib/activation";
+import { tanh } from "../lib/activation";
 
 interface TrainingData {
     inputs: number[];
