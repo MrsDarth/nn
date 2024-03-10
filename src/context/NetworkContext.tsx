@@ -1,7 +1,7 @@
 import { PropsWithChildren, createContext, useCallback, useContext, useMemo, useState } from "react";
 import FeedForwardNetwork, { LayerInit } from "../lib/ffnn";
 import useRender from "../hooks/render";
-import { tanh } from "../lib/activation";
+import { lrelu, relu, sigmoid, tanh } from "../lib/activation";
 
 interface TrainingData {
     inputs: number[];
@@ -13,7 +13,7 @@ interface NeuralNetContext {
     forward(inputs: number[]): number[];
 
     input: number;
-    setInput(input: number): void;
+    output: number;
     layers: LayerInit[];
     setLayers(layers: LayerInit[]): void;
 
@@ -28,9 +28,10 @@ export const useNeuralNet = () => useContext(NetworkContext);
 export function NeuralNetProvider({ children }: PropsWithChildren) {
     const [renderDep, render] = useRender();
     const [trainingData, setTrainingData] = useState<TrainingData[]>([]);
-    const [input, setInput] = useState(1);
-    const [layers, setLayers] = useState<LayerInit[]>(() => [{ nodes: 10, activate: tanh }, { nodes: 1 }]);
-    const network = useMemo(() => new FeedForwardNetwork(input, ...layers), [input, layers]);
+    const input = 1;
+    const output = 1;
+    const [layers, setLayers] = useState<LayerInit[]>(() => [{ nodes: 5, activate: sigmoid }]);
+    const network = useMemo(() => new FeedForwardNetwork(input, ...layers, { nodes: output }), [input, layers, output]);
     const forward = useCallback((inputs: number[]) => network.forward(inputs), [network, renderDep]);
     const train = useCallback((iterations = 1) => {
         for (let i = 0; i < iterations; i++)
@@ -43,7 +44,7 @@ export function NeuralNetProvider({ children }: PropsWithChildren) {
             value={{
                 network, forward,
                 train, setTrainingData,
-                input, setInput,
+                input, output,
                 layers, setLayers
             }}
         >

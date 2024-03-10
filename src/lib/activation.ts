@@ -18,6 +18,8 @@ export const prelu = (param = 0.1): ActivationFunction => ({
   backward: (value) => value < 0 ? param : 1,
 });
 
+export const lrelu = prelu(0.1);
+
 export const sigmoid: ActivationFunction = {
   forward: (value) => 1 / (1 + Math.exp(-value)),
   backward: (_, result) => result * (1 - result),

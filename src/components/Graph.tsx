@@ -6,7 +6,7 @@ import { CheckToggle } from "./Toggle";
 import { useNeuralNet } from "../context/NetworkContext";
 
 function sample<T>(start = 0, end = 5, step = 1, sample: (point: number) => T) {
-    const results = new Array<T>(Math.ceil((end - start) / step));
+    const results = Array<T>(Math.ceil((end - start) / step));
     for (let i = start, index = 0; i <= end; i += step)
         results[index++] = sample(i);
     return results;
@@ -37,7 +37,7 @@ export default function Graph() {
         setTrainingData(dataSample.map(({ x, y }) => ({ inputs: [x], expected: [y] })));
     }, [dataSample]);
     return (
-        <div className="bg-base-100 rounded-xl p-5 flex-1 max-w-[700px]">
+        <div className="bg-base-100 rounded-xl p-5 flex-1 min-w-[300px]">
             <div className="flex flex-col p-2 gap-2">
                 <div className="flex items-center gap-2 prose">
                     <label className="text-nowrap select-none">Graph Function</label>
@@ -67,16 +67,16 @@ export default function Graph() {
                         data={netSample}
                         style={{ data: { stroke: "red" } }}
                     />
-                    {dataVisual && (
-                        <VictoryScatter
-                            data={dataSample}
-                            dataComponent={<Point className="!fill-base-content" />}
-                        />
-                    )}
                     {lineVisual && (
                         <VictoryLine
                             data={lineSample}
                             style={{ data: { stroke: "blue" } }}
+                        />
+                    )}
+                    {dataVisual && (
+                        <VictoryScatter
+                            data={dataSample}
+                            dataComponent={<Point className="!fill-base-content" />}
                         />
                     )}
                 </VictoryChart>

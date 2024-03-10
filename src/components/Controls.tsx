@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNeuralNet } from "../context/NetworkContext";
 import { Perceptron } from "../lib/ffnn";
+import { PauseIcon, PlayIcon } from "./Icons";
 
 export default function Controls() {
     const [training, setTraining] = useState(false);
@@ -13,16 +14,14 @@ export default function Controls() {
     })
     return (
         <div className="flex flex-col gap-2">
-            {training ? (
-                <button className="btn btn-error" onClick={() => setTraining(false)}>Stop</button>
-            ) : (
-                <button className="btn btn-primary" onClick={() => setTraining(true)}>Train</button>
-            )}
+            <button className="btn btn-neutral" onClick={() => setTraining(!training)}>
+                {training ? <PauseIcon className="w-5 h-5 fill-current"/> : <PlayIcon className="w-6 h-6 fill-current"/>}
+            </button>
             <div className="flex items-center justify-between gap-2 prose">
                 <label className="text-nowrap select-none">Learn Rate</label>
                 <input
                     type="number"
-                    className="input input-sm input-bordered"
+                    className="input input-sm input-bordered w-24"
                     disabled={training}
                     min={0}
                     max={1}
@@ -35,7 +34,7 @@ export default function Controls() {
                 <label className="text-nowrap select-none">Iterations</label>
                 <input
                     type="number"
-                    className="input input-sm input-bordered"
+                    className="input input-sm input-bordered w-24"
                     disabled={training}
                     min={1}
                     value={iterations}

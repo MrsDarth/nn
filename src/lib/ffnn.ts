@@ -10,7 +10,9 @@ export class Perceptron {
 
     constructor(input: number) {
         this.bias = Perceptron.init();
-        this.weights = Array.from(Array(input), Perceptron.init);
+        this.weights = Array(input);
+        for (let i = 0; i < input; i++)
+            this.weights[i] = Perceptron.init();
         this.biasGrad = 0;
         this.weightGrads = Array(input).fill(0);
     }
@@ -52,7 +54,9 @@ class Layer {
 
     constructor(input: number, output: number, activation = identity) {
         this.input = input;
-        this.nodes = Array.from(Array(output), () => new Perceptron(input));
+        this.nodes = Array(output);
+        for (let i = 0; i < output; i++)
+            this.nodes[i] = new Perceptron(input);
         this.activate = activation;
     }
 
@@ -67,7 +71,7 @@ class Layer {
 
     backward(derivatives: number[]) {
         const activateDerivative = derivatives.map((d, i) => d * this.activate.backward(this.values[i], this.results[i]));
-        return this.nodes.reduce((inputDerivatives, node, i) => node.backward(activateDerivative[i], inputDerivatives), new Array<number>(this.input).fill(0));
+        return this.nodes.reduce((inputDerivatives, node, i) => node.backward(activateDerivative[i], inputDerivatives), Array<number>(this.input).fill(0));
     }
 
 }
@@ -82,7 +86,7 @@ export default class FeedForwardNetwork {
     layers: Layer[];
 
     constructor(input: number, ...layers: LayerInit[]) {
-        this.layers = new Array(layers.length);
+        this.layers = Array(layers.length);
         for (let i = 0; i < layers.length; i++) {
             const { nodes, activate } = layers[i];
             this.layers[i] = new Layer(input, nodes, activate);
