@@ -1,7 +1,7 @@
-import { memo } from "react";
 import { useNeuralNet } from "../context/NetworkContext"
 import { type ActivationFunction, identity, lrelu, relu, sigmoid, tanh } from "../lib/activation";
 import type { LayerInit } from "../lib/ffnn";
+import { MinusIcon, PlusIcon } from "./Icons";
 
 const nameToActivation = new Map<string, ActivationFunction>()
     .set("Identity", identity)
@@ -17,20 +17,46 @@ const activationToName = new Map<ActivationFunction, string>()
     .set(sigmoid, "Sigmoid")
     .set(tanh, "Tanh");
 
-export default memo(function Editor() {
-    const { layers, setLayers } = useNeuralNet();
+interface RangeProps {
+    value: number;
+    setValue(value: number): void;
+    min?: number;
+    max?: number;
+    step?: number;
+    disabled?: boolean;
+};
+
+function RangeEditor({ value, setValue, min = 0, max = 5, step = 1, disabled = false }: RangeProps) {
+    return (
+        <div className="flex gap-2">
+            <button className="btn btn-sm btn-circle"
+                disabled={disabled || value <= min}
+                onClick={() => setValue(value - step)}
+            >
+                <MinusIcon className="w-5 h-5 stroke-current" />
+            </button>
+            <span>{value}</span>
+            <button
+                className="btn btn-sm btn-circle"
+                disabled={disabled || value >= max}
+                onClick={() => setValue(value + step)}
+            >
+                <PlusIcon className="w-5 h-5 stroke-current" />
+            </button>
+        </div>
+    );
+};
+
+export default function Editor() {
+    const { layers, setLayers, isTraining } = useNeuralNet();
     return (
         <div className="flex flex-col gap-2">
-            <div className="flex items-center justify-between gap-2 prose">
+            <div className="flex justify-between gap-2 prose">
                 <label className="text-nowrap select-none">Hidden Layers</label>
-                <input
-                    type="number"
-                    className="input input-sm input-bordered w-24"
-                    min={0}
-                    max={5}
+                <RangeEditor
+                    disabled={isTraining}
                     value={layers.length}
-                    onChange={e => {
-                        const size = e.target.valueAsNumber;
+                    setValue={size => {
                         if (size > layers.length) {
                             const newLayers = Array<LayerInit>(size - layers.length).fill({ nodes: 1 });
                             setLayers([...layers, ...newLayers]);
@@ -50,19 +76,19 @@ export default memo(function Editor() {
                             <label className="select-none font-bold h-full">#{index + 1}</label>
                             <div className="flex items-center justify-between gap-2">
                                 <label className="select-none h-full">Nodes:</label>
-                                <input
-                                    type="number"
-                                    className="input input-sm input-bordered w-24"
+                                <RangeEditor
+                                    disabled={isTraining}
                                     min={1}
                                     max={10}
                                     value={nodes}
-                                    onChange={e => updateLayer({ nodes: e.target.valueAsNumber })}
+                                    setValue={nodes => updateLayer({ nodes })}
                                 />
                             </div>
                             <div className="flex items-center justify-between gap-2">
                                 <label className="select-none h-full">Activation:</label>
                                 <select
                                     className="select select-sm select-bordered"
+                                    disabled={isTraining}
                                     value={value}
                                     onChange={e => updateLayer({ activate: nameToActivation.get(e.target.value) })}
                                 >
@@ -78,4 +104,4 @@ export default memo(function Editor() {
             <div className="divider m-0" />
         </div>
     )
-});
+};

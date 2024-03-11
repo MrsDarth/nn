@@ -1,5 +1,5 @@
-import { LineSegment, Point, TSpan, VictoryAxis, VictoryChart, VictoryLabel, VictoryLine, VictoryScatter } from "victory";
-import { type EvalFunction } from "mathjs";
+import { LineSegment, Point, TSpan, VictoryAxis, VictoryChart, VictoryContainer, VictoryLabel, VictoryLine, VictoryScatter } from "victory";
+import { compile, type EvalFunction } from "mathjs";
 import { useCallback, useEffect, useId, useMemo, useState } from "react";
 import Formula from "./Formula";
 import { CheckToggle } from "./Toggle";
@@ -15,7 +15,7 @@ function sample<T>(start = 0, end = 5, step = 1, sample: (point: number) => T) {
 export default function Graph() {
     const { forward, setTrainingData } = useNeuralNet();
 
-    const [evalFn, setEvalFn] = useState<EvalFunction>(() => ({ evaluate: ({ x }) => x }));
+    const [evalFn, setEvalFn] = useState<EvalFunction>(() => compile("2sin(x) + 3"));
 
     const start = -2, end = 10, padding = 2;
     const min = -100, max = 100;
@@ -23,7 +23,7 @@ export default function Graph() {
         const result = evalFn.evaluate({ x });
         return { x, y: isNaN(result) ? 0 : Math.min(Math.max(result, min), max) };
     }, [evalFn]);
-    
+
     const lineSample = useMemo(() => sample(start, end, 0.01, sampleDataPoint), [sampleDataPoint]);
     const dataSample = useMemo(() => sample(start + padding, end - padding, 1, sampleDataPoint), [sampleDataPoint]);
     const netSample = useMemo(() => sample(start, end, 0.01, x => ({ x, y: forward([x])[0] })), [forward]);
@@ -53,7 +53,11 @@ export default function Graph() {
                 </div>
             </div>
             <div>
-                <VictoryChart domain={[start, end]} padding={20}>
+                <VictoryChart
+                    domain={[start, end]}
+                    padding={20}
+                    containerComponent={<VictoryContainer className="[&_svg]:!pointer-events-none"/>}
+                >
                     <VictoryAxis
                         axisComponent={<LineSegment className="!stroke-base-content" />}
                         tickLabelComponent={<VictoryLabel tspanComponent={<TSpan className="!fill-base-content" />} />}

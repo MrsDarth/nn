@@ -6,7 +6,7 @@ interface FormulaProps {
 }
 
 export default function Formula({ setEval }: FormulaProps) {
-    const [formula, setFormula] = useState("x");
+    const [formula, setFormula] = useState("2sin(x) + 3");
     return (
         <input
             type="text"

@@ -1,5 +1,5 @@
 import type { ReactNode } from "react";
-import { Point, VictoryGroup, VictoryLine, VictoryScatter } from "victory";
+import { Point, VictoryContainer, VictoryGroup, VictoryLine, VictoryScatter } from "victory";
 import { useNeuralNet } from "../context/NetworkContext";
 import { tanh } from "../lib/activation";
 import Editor from "./Editor";
@@ -39,7 +39,10 @@ export default function Visual() {
         <div className="bg-base-100 rounded-xl p-5 flex-1">
             <Editor />
             <div>
-                <VictoryGroup padding={10}>
+                <VictoryGroup
+                    padding={10}
+                    containerComponent={<VictoryContainer className="[&_svg]:!pointer-events-none" />}
+                >
                     {lines}
                     <VictoryScatter
                         data={points}
