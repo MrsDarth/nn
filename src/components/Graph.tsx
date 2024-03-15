@@ -69,12 +69,12 @@ export default function Graph() {
                     />
                     <VictoryLine
                         data={netSample}
-                        style={{ data: { stroke: "red" } }}
+                        style={{ data: { stroke: "#ff1a1a" } }}
                     />
                     {lineVisual && (
                         <VictoryLine
                             data={lineSample}
-                            style={{ data: { stroke: "blue" } }}
+                            style={{ data: { stroke: "#337dff" } }}
                         />
                     )}
                     {dataVisual && (

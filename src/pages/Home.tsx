@@ -3,7 +3,7 @@ import Graph from "../components/Graph";
 import Visual from "../components/Visual";
 import { NeuralNetProvider } from "../context/NetworkContext";
 
-export default function Home() {
+export default function BackPropagation() {
     return (
         <div className="flex p-5 gap-5">
             <div className="flex flex-wrap gap-5 w-full">

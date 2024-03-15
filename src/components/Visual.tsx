@@ -21,14 +21,13 @@ export default function Visual() {
             const point: Point = { x: layerIndex + 1, y: (nodeIndex + 1) / (nodesLength + 1) };
             node.weights.forEach((weight, weightIndex, { length: weightsLength }) => {
                 const inputPoint = points[pointOffset - weightsLength + weightIndex];
-                const baseColor = weight > 0 ? "#0000ff" : "#ff0000";
-                const opacity = Math.round(tanh.forward(Math.abs(weight)) * 0xFF);
-                const color = baseColor + opacity.toString(16).padStart(2, "0");
+                const color = weight > 0 ? "#337dff" : "#ff1a1a";
+                const opacity = tanh.forward(Math.abs(weight));
                 lines.push(
                     <VictoryLine
                         key={lines.length}
                         data={[inputPoint, point]}
-                        style={{ data: { stroke: color } }}
+                        style={{ data: { stroke: color, opacity } }}
                     />
                 );
             });
